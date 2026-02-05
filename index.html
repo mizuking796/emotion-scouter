@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>emo. | Emotion Analysis</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#c9a87c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="emo.">
+  <link rel="apple-touch-icon" href="icon-192.png">
+
+  <!-- OGP -->
+  <meta name="description" content="リアルタイム感情分析アプリ。カメラで顔を検出し、7つの基本感情と口角の状態を可視化します。">
+  <meta property="og:title" content="emo. | Emotion Analysis">
+  <meta property="og:description" content="リアルタイム感情分析アプリ。7つの基本感情と口角を可視化。">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="icon-512.png">
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <h1 class="logo">emo<span class="dot">.</span></h1>
+      <p class="tagline">Emotion Analysis</p>
+    </header>
+
+    <main class="main">
+      <section class="camera-section">
+        <div class="video-wrapper">
+          <video id="video" autoplay muted playsinline></video>
+          <img id="uploadedImage" class="hidden" alt="アップロード画像">
+          <canvas id="overlay"></canvas>
+          <div id="faceSelector" class="face-selector hidden"></div>
+        </div>
+        <div class="status-bar" id="statusBar">
+          <span class="status-dot"></span>
+          <span id="status">Loading...</span>
+          <span class="loading-spinner" id="loadingSpinner"></span>
+        </div>
+        <div class="camera-controls">
+          <button id="startBtn" class="btn btn-primary" disabled>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+              <circle cx="12" cy="13" r="4"/>
+            </svg>
+            開始
+          </button>
+          <button id="switchBtn" class="btn btn-secondary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+            </svg>
+            切替
+          </button>
+          <label class="btn btn-secondary upload-label">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            アップロード
+            <input type="file" id="imageUpload" accept="image/*" hidden>
+          </label>
+        </div>
+      </section>
+
+      <section class="analysis-section">
+        <div class="card radar-card">
+          <canvas id="radar" width="240" height="240"></canvas>
+          <div class="mouth-inline" id="mouthCorner">
+            <span class="mouth-label">😟</span>
+            <div class="mouth-bar-inline">
+              <div class="mouth-bar-fill-inline" id="mouthBarFill"></div>
+            </div>
+            <span class="mouth-label">😊</span>
+            <span class="mouth-value-inline" id="mouthValue">—</span>
+          </div>
+        </div>
+
+        <div class="card emotions-card">
+          <div class="card-label">Basic Emotions</div>
+          <div class="emotion-values" id="emotionValues"></div>
+        </div>
+
+        <div class="card settings-card">
+          <div class="setting-row">
+            <span class="setting-name">感度</span>
+            <input type="range" id="sensitivity" min="0.5" max="3.0" step="0.1" value="1.0">
+            <span id="sensitivityValue" class="setting-value">1.0x</span>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="landscape-warning">
+    📱 縦向きで使ってね
+  </div>
+
+  <!-- 利用規約モーダル -->
+  <div class="terms-modal" id="termsModal">
+    <div class="terms-content">
+      <h2>emo. へようこそ</h2>
+      <p class="terms-subtitle">リアルタイム感情分析アプリ</p>
+
+      <div class="terms-box">
+        <h3>利用規約</h3>
+        <ul>
+          <li>本アプリはカメラを使用して顔の表情を分析します</li>
+          <li>映像データはデバイス内でのみ処理され、外部に送信されません</li>
+          <li>分析結果は参考値であり、医学的・心理学的な診断ではありません</li>
+          <li>本アプリの利用により生じた損害について、開発者は責任を負いません</li>
+        </ul>
+      </div>
+
+      <div class="terms-developer">
+        <p>開発者: <strong>白井瑞貴</strong></p>
+        <p class="terms-contact">お問い合わせ: and.and0824@gmail.com</p>
+      </div>
+
+      <button class="btn btn-primary terms-agree" id="agreeBtn">
+        同意して利用開始
+      </button>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <span>© 2025 emo.</span>
+    <a href="#" id="showTerms">利用規約</a>
+    <span>開発: 白井瑞貴</span>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+  <script src="app.js"></script>
+  <script>
+    // 利用規約の同意チェック
+    const termsModal = document.getElementById('termsModal');
+    const agreeBtn = document.getElementById('agreeBtn');
+    const showTerms = document.getElementById('showTerms');
+
+    if (!localStorage.getItem('emo_terms_agreed')) {
+      termsModal.classList.add('show');
+    }
+
+    agreeBtn.addEventListener('click', () => {
+      localStorage.setItem('emo_terms_agreed', 'true');
+      termsModal.classList.remove('show');
+    });
+
+    showTerms.addEventListener('click', (e) => {
+      e.preventDefault();
+      termsModal.classList.add('show');
+    });
+
+    // Service Worker登録
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
+</body>
+</html>

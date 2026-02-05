@@ -1,0 +1,22 @@
+{
+  "name": "emo. - Emotion Analysis",
+  "short_name": "emo.",
+  "description": "リアルタイム感情分析アプリ。カメラで顔を検出し、7つの基本感情と口角の状態を可視化します。",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#faf8f5",
+  "theme_color": "#c9a87c",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
