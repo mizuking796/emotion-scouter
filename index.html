@@ -151,6 +151,11 @@
     agreeBtn.addEventListener('click', () => {
       localStorage.setItem('emo_terms_agreed', 'true');
       termsModal.classList.remove('show');
+      // カメラを自動起動
+      const startBtn = document.getElementById('startBtn');
+      if (startBtn && !startBtn.disabled) {
+        startBtn.click();
+      }
     });
 
     showTerms.addEventListener('click', (e) => {
